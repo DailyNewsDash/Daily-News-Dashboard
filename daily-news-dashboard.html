@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="3600">
+    <title>📰 Daily News Dashboard • April 19, 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:wght@700&amp;display=swap');
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .headline-font { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; line-height: 1.1; }
+        .news-card { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); }
+        .news-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .source-header::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 60px; height: 3px; background: linear-gradient(to right, #3b82f6, #60a5fa); border-radius: 3px; }
+        .headline-item { transition: all 0.1s ease; }
+        .headline-item:hover { background-color: #f8fafc; transform: translateX(4px); }
+        .dark .headline-item:hover { background-color: #1e2937; }
+        .live-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .news-ticker { overflow: hidden; white-space: nowrap; }
+        .ticker-content { display: inline-block; animation: ticker 25s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .metric { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+    <!-- Top Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-x-4">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-11 h-11 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+                            <i class="fa-solid fa-newspaper text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold tracking-tighter">Daily<span class="text-blue-400">Brief</span></h1>
+                            <p class="text-[10px] text-slate-500 -mt-1">NEWS INTELLIGENCE</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-x-4">
+                    <div class="flex items-center gap-x-2 bg-slate-900 px-4 py-1.5 rounded-3xl border border-slate-700">
+                        <div class="flex items-center gap-x-1.5">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full live-dot"></div>
+                            <span class="text-emerald-400 text-sm font-medium">LIVE</span>
+                        </div>
+                        <span class="text-slate-400 text-xs">• Updated moments ago</span>
+                    </div>
+                    
+                    <div id="live-clock" class="font-mono text-sm bg-slate-900 px-4 py-1.5 rounded-3xl border border-slate-700 text-slate-400"></div>
+                    
+                    <button onclick="refreshDashboard()" class="flex items-center gap-x-2 px-5 py-2 bg-white text-slate-900 hover:bg-slate-100 transition-colors rounded-3xl text-sm font-semibold shadow-sm">
+                        <i class="fa-solid fa-sync-alt mr-1.5"></i>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <div class="max-w-screen-2xl mx-auto px-8 pt-8 pb-6">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-y-4">
+            <div>
+                <div class="flex items-center gap-x-3 mb-2">
+                    <span class="px-3 py-1 bg-blue-600/20 text-blue-400 text-xs font-bold tracking-[1.5px] rounded-full">SUNDAY, APRIL 19, 2026</span>
+                    <span class="px-3 py-1 bg-red-500/10 text-red-400 text-xs font-bold tracking-[1.5px] rounded-full flex items-center gap-x-1">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                        <span>BREAKING</span>
+                    </span>
+                </div>
+                <h2 class="text-6xl font-bold tracking-tighter headline-font">Today's Top Stories</h2>
+                <p class="mt-2 text-xl text-slate-400 max-w-md">Curated from <strong>12 major outlets</strong> • 98 headlines analyzed</p>
+            </div>
+            
+            <div class="flex items-center gap-x-6 text-sm">
+                <div class="text-center">
+                    <div class="text-3xl font-semibold text-white metric">12</div>
+                    <div class="text-xs text-slate-500 -mt-1">SOURCES</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-semibold text-white metric">98</div>
+                    <div class="text-xs text-slate-500 -mt-1">HEADLINES</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-semibold text-emerald-400 metric">5</div>
+                    <div class="text-xs text-slate-500 -mt-1">TRENDING</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breaking News Ticker -->
+    <div class="max-w-screen-2xl mx-auto px-8 mb-8">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl px-6 py-3 flex items-center gap-x-4 overflow-hidden">
+            <div class="flex-shrink-0 flex items-center gap-x-2 pr-4 border-r border-slate-700">
+                <i class="fa-solid fa-exclamation-triangle text-amber-400"></i>
+                <span class="font-bold text-sm tracking-widest">BREAKING</span>
+            </div>
+            <div class="news-ticker flex-1 text-sm text-slate-300">
+                <div class="ticker-content flex items-center gap-x-8">
+                    <span class="font-medium">• Trump announces new Iran talks as Hormuz remains tense • AI stocks surge near buy points • Lubricant price increases sweep industry • 8 children killed in Louisiana shooting • Top NFL Draft prospect arrested</span>
+                    <span class="font-medium">• Trump announces new Iran talks as Hormuz remains tense • AI stocks surge near buy points • Lubricant price increases sweep industry • 8 children killed in Louisiana shooting • Top NFL Draft prospect arrested</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="max-w-screen-2xl mx-auto px-8 pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            
+            <!-- Wall Street Journal -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl flex items-center justify-center">
+                            <i class="fa-solid fa-chart-line text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-lg">Wall Street Journal</div>
+                            <div class="text-[10px] text-slate-500">BUSINESS • FINANCE</div>
+                        </div>
+                    </div>
+                    <a href="https://www.wsj.com" target="_blank" class="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.wsj.com/livecoverage/iran-war-us-talks-2026?mod=hp_lead_pos1" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">Trump Says He Is Dispatching Negotiators, Warns Iran to Take Deal</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.wsj.com/world/middle-east/removing-irans-enriched-uranium-would-be-difficultbut-it-has-been-done-before-d2707a27?mod=hp_lead_pos2" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">Removing Iran's Enriched Uranium Would Be Difficult—but It Has Been Done Before</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.wsj.com/finance/stocks/the-record-stock-market-rests-on-some-big-one-offs-7e7a2500?mod=hp_lead_pos3" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">The Record Stock Market Rests on Some Big One-Offs</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.wsj.com/politics/in-fed-fight-trump-faces-the-senator-with-nothing-to-lose-927c70d8?mod=hp_lead_pos4" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">In Fed Fight, Trump Faces the Senator With Nothing to Lose</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.wsj.com/tech/ai/the-ceo-preaching-straight-talk-about-ai-and-job-losses-a3aaaaf1?mod=hp_lead_pos5" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">The CEO Preaching Straight Talk About AI and Job Losses</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">WSJ</span></div>
+            </div>
+
+            <!-- Bloomberg -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-globe text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">Bloomberg</div><div class="text-[10px] text-slate-500">MARKETS • ECONOMY</div></div>
+                    </div>
+                    <a href="https://www.bloomberg.com" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.bloomberg.com/news/articles/2026-04-19/qxo-to-buy-topbuild-for-17-billion-in-building-products-deal" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">QXO to Buy TopBuild in $17 Billion Building Products Deal</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.bloomberg.com/news/articles/2026-04-19/gunfire-u-turns-and-threats-mark-a-chaotic-weekend-in-hormuz" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Gunfire, U-Turns and Threats Mark a Chaotic Weekend in Hormuz</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.bloomberg.com/news/articles/2026-04-19/big-tech-s-4-trillion-boomerang-powers-s-p-500-to-new-heights" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Big Tech’s $4 Trillion Boomerang Powers S&amp;P 500 to New Heights</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.bloomberg.com/news/articles/2026-04-19/crypto-hack-worth-290-million-triggers-defi-contagion-shock" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Crypto Hack Worth $290 Million Triggers DeFi Contagion Shock</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.bloomberg.com/news/articles/2026-04-19/cheap-batteries-are-taking-over-the-world-s-power-grids" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Cheap Batteries Are Taking Over the World’s Power Grids</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">BLOOMBERG</span></div>
+            </div>
+
+            <!-- Investor's Business Daily -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-blue-700 to-indigo-700 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-chart-line text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">Investor's Business Daily</div><div class="text-[10px] text-slate-500">STOCKS • INVESTING</div></div>
+                    </div>
+                    <a href="https://www.investors.com" target="_blank" class="text-blue-400 hover:text-blue-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.investors.com/category/market-trend/stock-market-today/" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">Futures Due; Trump Announces New Iran Talks With Hormuz Shut</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.investors.com/news/caterpillar-taiwan-semiconductor-nvidia-chipmaker-ai-stocks-near-buy-points/" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">AI Plays Lead 5 Stocks Near Buy Points As Market Surges</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.investors.com/news/technology/google-stock-marvell-artificial-intelligence-chips-broadcom-nvdia/" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">Google, Marvell In AI Chip Talks As Nvidia Competition Heats Up</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.investors.com/research/ibd-stock-of-the-day/xpo-iran-oil-prices-jb-hunt-trucking-stock-of-the-day-logistics-hormuz/" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">Stock Of The Day: Trucking Company Up 140% In A Year Jumps On Iran, Oil Prices</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.investors.com/news/iran-war-stock-market-energy-stocks/" target="_blank" class="font-semibold text-sm leading-tight hover:text-blue-400 transition-colors">The Iran War's Lessons For Investors</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">IBD</span></div>
+            </div>
+
+            <!-- OilPrice.com -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-oil-can text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">OilPrice.com</div><div class="text-[10px] text-slate-500">ENERGY • COMMODITIES</div></div>
+                    </div>
+                    <a href="https://oilprice.com" target="_blank" class="text-amber-400 hover:text-amber-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://oilprice.com/Latest-Energy-News/World-News/Strait-of-Hormuz-Faces-Full-Shutdown-as-Iran-Escalates-Standoff.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Strait of Hormuz Faces Full Shutdown as Iran Escalates Standoff</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://oilprice.com/Energy/Oil-Prices/Oil-Slides-but-the-Real-Test-Comes-This-Weekend.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Oil Slides but the Real Test Comes This Weekend</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="#" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Europe Faces Summer Jet Fuel Crisis as Iran War Slashes Supply</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="#" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Oil Prices Sink 10% as Trump Announces Strait of Hormuz is Fully Open</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="#" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Robots Are Quietly Building the Future of Renewable Energy</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">OILPRICE</span></div>
+            </div>
+
+            <!-- NEW: JobbersWorld -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-amber-600 to-yellow-700 rounded-2xl flex items-center justify-center">
+                            <i class="fa-solid fa-industry text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-lg">JobbersWorld</div>
+                            <div class="text-[10px] text-slate-500">LUBRICANTS • PETROLEUM</div>
+                        </div>
+                    </div>
+                    <a href="https://jobbersworld.com" target="_blank" class="text-amber-400 hover:text-amber-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://jobbersworld.com/" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Qatar Supply Disruptions Hit Pearl GTL – Potential Ripple Effects on U.S. Group III Base Oil Availability</a>
+                        <p class="text-xs text-slate-400 mt-1">Supply chain issues in the Middle East could impact U.S. base oil markets.</p>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://jobbersworld.com/category/lubricant-news/" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Making Sense of the Spring 2026 Lubricant Price Increase Wave</a>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://jobbersworld.com/" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Cadence Petroleum Group Acquires Southeast Energy</a>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://jobbersworld.com/category/price-changes-within-the-industry/" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">Motiva Announces 15 cpg Increase on Base Oil Posted Prices</a>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://jobbersworld.com/" target="_blank" class="font-semibold text-sm leading-tight hover:text-amber-400 transition-colors">After the Ceasefire: Industry Outlook for Lubricants and Base Oils</a>
+                    </div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500">
+                    <span>5 of 10 headlines shown</span>
+                    <span class="font-mono">JOBBERSWORLD</span>
+                </div>
+            </div>
+
+            <!-- Fox News -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-red-600 to-red-700 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-tv text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">Fox News</div><div class="text-[10px] text-slate-500">US • WORLD • POLITICS</div></div>
+                    </div>
+                    <a href="https://www.foxnews.com" target="_blank" class="text-red-400 hover:text-red-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.foxnews.com/live-news/iran-war-israel-us-strait-hormuz-april-19" target="_blank" class="font-semibold text-sm leading-tight hover:text-red-400 transition-colors">US Navy seizes Iranian cargo ship after 'blowing hole' in engine room, Trump says</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.foxnews.com/us/8-children-dead-mass-shooting-began-domestic-dispute-police-say" target="_blank" class="font-semibold text-sm leading-tight hover:text-red-400 transition-colors">8 children killed in mass shooting that began as domestic dispute, police say</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.foxnews.com/media/waltz-says-trump-has-created-best-chance-our-lifetime-break-hezbollahs-grip-lebanon" target="_blank" class="font-semibold text-sm leading-tight hover:text-red-400 transition-colors">UN ambassador touts Trump strategy as Iran regime's own military defies its diplomats</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.foxnews.com/sports/top-nfl-draft-pick-zachariah-branch-arrested-georgia-two-misdemeanor-charges-" target="_blank" class="font-semibold text-sm leading-tight hover:text-red-400 transition-colors">Top NFL Draft prospect busted on two misdemeanor charges days before selection</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.foxnews.com/politics/california-regulators-kill-charity-fireworks-americas-250th-sparking-outrage" target="_blank" class="font-semibold text-sm leading-tight hover:text-red-400 transition-colors">California regulators kill charity fireworks for America's 250th, igniting outrage</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">FOX NEWS</span></div>
+            </div>
+
+            <!-- New York Post -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-rose-600 to-pink-600 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-newspaper text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">New York Post</div><div class="text-[10px] text-slate-500">NYC • NATIONAL • SPORTS</div></div>
+                    </div>
+                    <a href="https://nypost.com" target="_blank" class="text-rose-400 hover:text-rose-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/us-news/8-kids-ages-1-to-14-killed-in-mass-shootings-across-shreveport-louisiana/" target="_blank" class="font-semibold text-sm leading-tight hover:text-rose-400 transition-colors">8 kids — ages 1 to 14 — killed in mass shooting across Louisiana — as gunman targets his ‘descendants’</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/us-news/iran-war-negotiations-will-resume-this-week-trump-tells-the-post/" target="_blank" class="font-semibold text-sm leading-tight hover:text-rose-400 transition-colors">Iran War negotiations will resume this week, Trump tells The Post — despite new attacks on Hormuz</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/us-news/iranian-businesswoman-shamim-mafi-busted-at-lax-charged-with-helping-regime-buy-drones-bombs-and-ammo/" target="_blank" class="font-semibold text-sm leading-tight hover:text-rose-400 transition-colors">Farewell to arms: Glam Iranian businesswoman busted at LAX, charged with helping regime sell drones, bombs and ammo</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/sports/yankees-trade-braden-shewmake-to-astros-for-wilmy-sanchez/" target="_blank" class="font-semibold text-sm leading-tight hover:text-rose-400 transition-colors">Yankees trade infielder to Astros for pitcher</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/sports/georgia-receiver-zachariah-branch-arrested-days-before-2026-nfl-draft/" target="_blank" class="font-semibold text-sm leading-tight hover:text-rose-400 transition-colors">Wide receiver prospect arrested days before 2026 NFL Draft</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">NY POST</span></div>
+            </div>
+
+            <!-- Washington Post -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-landmark text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">The Washington Post</div><div class="text-[10px] text-slate-500">POLITICS • INVESTIGATIONS</div></div>
+                    </div>
+                    <a href="https://www.washingtonpost.com" target="_blank" class="text-indigo-400 hover:text-indigo-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.washingtonpost.com/world/2026/04/19/trump-iran-war-hormuz-strait-negotiations/" target="_blank" class="font-semibold text-sm leading-tight hover:text-indigo-400 transition-colors">Trump says Iran talks will resume, threatens power plants and bridges if no deal is reached</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.washingtonpost.com/nation/2026/04/19/louisiana-shooting/" target="_blank" class="font-semibold text-sm leading-tight hover:text-indigo-400 transition-colors">8 children killed in Louisiana shooting, police say</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.washingtonpost.com/politics/2026/04/19/michigan-2024-ballots-harmeet-dhillon/" target="_blank" class="font-semibold text-sm leading-tight hover:text-indigo-400 transition-colors">DOJ demands Detroit-area 2024 ballots, escalating election scrutiny</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.washingtonpost.com/politics/2026/04/19/trump-ballroom-public-mentions/" target="_blank" class="font-semibold text-sm leading-tight hover:text-indigo-400 transition-colors">Trump’s fixation on White House ballroom is increasing, Post analysis finds</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.washingtonpost.com/science/2026/04/19/science-research-funding-cuts-trump/" target="_blank" class="font-semibold text-sm leading-tight hover:text-indigo-400 transition-colors">Where U.S. science has been hit hardest after Trump’s first year</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">WASH POST</span></div>
+            </div>
+
+            <!-- USA Today -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-sky-600 to-cyan-600 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-globe-americas text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">USA Today</div><div class="text-[10px] text-slate-500">NATIONAL • SPORTS • ENTERTAINMENT</div></div>
+                    </div>
+                    <a href="https://www.usatoday.com" target="_blank" class="text-sky-400 hover:text-sky-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/news/politics/2026/04/19/maga-pundits-trump-mental-health/89690138007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-sky-400 transition-colors">'Beyond madness': MAGA pundits question Trump's mental health</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/news/nation/2026/04/19/shreveport-louisiana-mass-shooting/89690138007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-sky-400 transition-colors">Live updates: Domestic disturbance shooting leaves 8 children dead in Louisiana</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/news/politics/2026/04/19/when-will-gas-prices-drop-amid-iran-war/89690222007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-sky-400 transition-colors">When will gas prices drop? Official says it may not be until 2027</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/sports/nba/playoffs/2026/04/19/celtics-76ers-playoff-picks-odds/89658960007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-sky-400 transition-colors">Celtics vs 76ers live updates: Jayson Tatum posts huge performance</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/sports/nfl/draft/2026/04/19/2026-nfl-mock-draft-dexter-lawrence-trade-giants-bengals/89688112007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-sky-400 transition-colors">NFL mock draft: What do Giants do with extra pick after trade?</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">USA TODAY</span></div>
+            </div>
+
+            <!-- Yahoo News -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-purple-600 to-violet-600 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-search text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">Yahoo News</div><div class="text-[10px] text-slate-500">AGGREGATED • TRENDING</div></div>
+                    </div>
+                    <a href="https://news.yahoo.com" target="_blank" class="text-purple-400 hover:text-purple-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://news.yahoo.com/news/articles/trump-read-bible-verse-oval-040155417.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-purple-400 transition-colors">Trump's Oval Office Bible reading adds to growing role of religion in his admin</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://news.yahoo.com/news/articles/humanoid-robot-sprints-victory-beijing-040036560.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-purple-400 transition-colors">Humanoid sprints to victory in China and beats human half-marathon world record</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://news.yahoo.com/news/articles/feds-look-connection-cases-missing-191710510.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-purple-400 transition-colors">Federal investigators look for links in cases of 10 missing or dead scientists</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://news.yahoo.com/news/articles/us--supreme-court-louisiana-chevron-154606337.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-purple-400 transition-colors">The Supreme Court hands a win to oil and gas companies fighting environmental lawsuits in Louisiana</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://finance.yahoo.com/news/putin-finally-admits-russia-economy-215355032.html" target="_blank" class="font-semibold text-sm leading-tight hover:text-purple-400 transition-colors">Putin finally admits Russia’s economy is in trouble</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>5 of 10 headlines shown</span><span class="font-mono">YAHOO</span></div>
+            </div>
+
+            <!-- ESPN -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-football-ball text-white text-xl"></i></div>
+                        <div><div class="font-bold text-lg">ESPN</div><div class="text-[10px] text-slate-500">SPORTS • LIVE</div></div>
+                    </div>
+                    <a href="https://www.espn.com" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/sports/nba/playoffs/2026/04/19/celtics-76ers-playoff-picks-odds/89658960007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Celtics vs 76ers: Jayson Tatum posts huge performance in playoffs</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/sports/yankees-trade-braden-shewmake-to-astros-for-wilmy-sanchez/" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Yankees trade infielder Braden Shewmake to Astros for pitcher Wilmy Sanchez</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/sports/georgia-receiver-zachariah-branch-arrested-days-before-2026-nfl-draft/" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">Georgia wide receiver Zachariah Branch arrested on misdemeanor charges days before NFL Draft</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://www.usatoday.com/story/sports/nfl/draft/2026/04/19/2026-nfl-mock-draft-dexter-lawrence-trade-giants-bengals/89688112007/" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">2026 NFL Mock Draft: What the Giants should do with extra pick after trade</a></div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1"><a href="https://nypost.com/2026/04/19/sports/twins-manager-derek-sheltons-profane-ejection-rant-caught-on-hot-mic/" target="_blank" class="font-semibold text-sm leading-tight hover:text-emerald-400 transition-colors">"That’s bulls–t": MLB manager’s profane ejection rant caught on hot mic</a></div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500"><span>Live scores &amp; more on ESPN</span><span class="font-mono">ESPN</span></div>
+            </div>
+
+            <!-- X -->
+            <div class="news-card bg-slate-900 border border-slate-700 rounded-3xl p-6 flex flex-col h-full">
+                <div class="source-header flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-black rounded-2xl flex items-center justify-center">
+                            <i class="fa-brands fa-x-twitter text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-lg">X (Twitter)</div>
+                            <div class="text-[10px] text-slate-500">TRENDING • REAL-TIME</div>
+                        </div>
+                    </div>
+                    <a href="https://x.com" target="_blank" class="text-slate-400 hover:text-white text-xs flex items-center gap-x-1 font-medium">VISIT <i class="fa-solid fa-external-link-alt text-[10px]"></i></a>
+                </div>
+                <div class="space-y-3 flex-1">
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://x.com/Cointelegraph/status/1983723078006796588" target="_blank" class="font-semibold text-sm leading-tight hover:text-white transition-colors">🗞️ Top 10 news today: OpenAI IPO plans, MetaMask IPO underwriters, Fed rate cut, Bitcoin at $109k</a>
+                        <p class="text-xs text-slate-400 mt-1">— @Cointelegraph</p>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://x.com/tomo_wallet/status/1956288427860664793" target="_blank" class="font-semibold text-sm leading-tight hover:text-white transition-colors">U.S. PPI beats forecast • SEC delays Solana ETF • Treasury eyes Bitcoin reserve</a>
+                        <p class="text-xs text-slate-400 mt-1">— @tomo_wallet</p>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://x.com/focusw3b/status/1883923745707811247" target="_blank" class="font-semibold text-sm leading-tight hover:text-white transition-colors">TOP 5: ECB holds rates • $12.5T BlackRock de-dollarization note • Trump’s World Liberty buys more ETH</a>
+                        <p class="text-xs text-slate-400 mt-1">— @focusw3b</p>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://x.com/FT/status/1883923745707811247" target="_blank" class="font-semibold text-sm leading-tight hover:text-white transition-colors">Breaking: Markets fall as investors fret over Chinese AI group DeepSeek impact</a>
+                        <p class="text-xs text-slate-400 mt-1">— @FT</p>
+                    </div>
+                    <div class="headline-item rounded-2xl px-4 py-3 -mx-1">
+                        <a href="https://x.com/Citi973/status/2045240020122939738" target="_blank" class="font-semibold text-sm leading-tight hover:text-white transition-colors">Daily economic roundup: Ghana fuel prices, Treasury bills, business news</a>
+                        <p class="text-xs text-slate-400 mt-1">— @Citi973</p>
+                    </div>
+                </div>
+                <div class="pt-4 mt-auto border-t border-slate-700 flex justify-between items-center text-xs text-slate-500">
+                    <span>5 trending posts shown</span>
+                    <span class="font-mono">X</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Trending Summary -->
+        <div class="mt-8 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold flex items-center gap-x-3">
+                        <i class="fa-solid fa-fire text-orange-400"></i> 
+                        <span>Trending Across Sources</span>
+                    </h3>
+                    <p class="text-slate-400 text-sm mt-1">Stories dominating headlines today</p>
+                </div>
+                <div class="text-xs px-4 py-2 bg-slate-800 rounded-3xl text-slate-400">5 MAJOR THEMES</div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <span class="text-red-400"><i class="fa-solid fa-globe fa-lg"></i></span>
+                        <span class="font-semibold">Iran Conflict &amp; Hormuz</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Covered by 8 of 12 sources • Trump negotiators dispatched • Oil &amp; lubricant markets volatile</div>
+                    <div class="mt-3 text-[10px] text-emerald-400 font-medium">8 SOURCES • 15 ARTICLES</div>
+                </div>
+                
+                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <span class="text-rose-400"><i class="fa-solid fa-skull-crossbones fa-lg"></i></span>
+                        <span class="font-semibold">Louisiana Mass Shooting</span>
+                    </div>
+                    <div class="text-xs text-slate-400">8 children (ages 1-14) killed • Deadliest mass killing in U.S. in two years</div>
+                    <div class="mt-3 text-[10px] text-emerald-400 font-medium">6 SOURCES • 9 ARTICLES</div>
+                </div>
+                
+                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <span class="text-blue-400"><i class="fa-solid fa-chart-line fa-lg"></i></span>
+                        <span class="font-semibold">Markets &amp; AI Rally</span>
+                    </div>
+                    <div class="text-xs text-slate-400">S&amp;P 500 records • AI stocks near buy points • Big Tech $4T rebound</div>
+                    <div class="mt-3 text-[10px] text-emerald-400 font-medium">7 SOURCES • 11 ARTICLES</div>
+                </div>
+                
+                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <span class="text-amber-400"><i class="fa-solid fa-industry fa-lg"></i></span>
+                        <span class="font-semibold">Lubricants &amp; Base Oils</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Spring price increases • Qatar supply disruptions • Motiva 15 cpg hike • Cadence acquisition</div>
+                    <div class="mt-3 text-[10px] text-emerald-400 font-medium">3 SOURCES • 7 ARTICLES</div>
+                </div>
+                
+                <div class="bg-slate-800 rounded-2xl p-5 border border-slate-700">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <span class="text-emerald-400"><i class="fa-solid fa-football-ball fa-lg"></i></span>
+                        <span class="font-semibold">NFL Draft &amp; MLB Drama</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Top prospect arrested • Yankees trade • Twins manager hot mic rant</div>
+                    <div class="mt-3 text-[10px] text-emerald-400 font-medium">4 SOURCES • 8 ARTICLES</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-8">
+        <div class="max-w-screen-2xl mx-auto px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-y-4 text-sm">
+                <div class="text-slate-500">
+                    <span>Generated on Sunday, April 19, 2026 at 3:25 PM CDT</span> • 
+                    <span class="font-mono text-xs">Snapshot ID: DB-20260419-1525-v12</span>
+                </div>
+                
+                <div class="flex items-center gap-x-6 text-xs text-slate-500">
+                    <div class="flex items-center gap-x-1.5">
+                        <i class="fa-solid fa-sync fa-sm"></i>
+                        <span>Auto-refreshes every 60 minutes</span>
+                    </div>
+                    <div>•</div>
+                    <a href="#" onclick="window.location.reload()" class="hover:text-white transition-colors">Force refresh now</a>
+                    <div>•</div>
+                    <span>Sources: WSJ • Bloomberg • IBD • OilPrice • JobbersWorld • Fox • NYPost • WaPo • USA Today • Yahoo • ESPN • X</span>
+                </div>
+                
+                <div class="text-xs text-slate-500 flex items-center gap-x-2">
+                    <span>Unique Dashboard URL:</span> 
+                    <code class="bg-slate-900 px-2 py-px rounded text-blue-400">/artifacts/daily-news-dashboard.html</code>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-slate-800 text-center text-[10px] text-slate-600">
+                This is a static snapshot for personal use. Headlines and links are current as of generation time. 
+                For the absolute latest news, visit the source websites directly.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function updateClock() {
+            const clockEl = document.getElementById('live-clock');
+            if (!clockEl) return;
+            
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                clockEl.innerHTML = `<i class="fa-regular fa-clock mr-1.5"></i>${timeString} CDT`;
+            }, 10000);
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            clockEl.innerHTML = `<i class="fa-regular fa-clock mr-1.5"></i>${timeString} CDT`;
+        }
+        
+        function refreshDashboard() {
+            const btns = document.querySelectorAll('button');
+            btns.forEach(btn => {
+                if (btn.innerText.includes('Refresh')) {
+                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Updating...`;
+                    btn.disabled = true;
+                }
+            });
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 800);
+        }
+        
+        function animateOnLoad() {
+            const cards = document.querySelectorAll('.news-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    card.style.transitionDelay = (index * 40) + 'ms';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 120);
+            });
+            
+            const ticker = document.querySelector('.news-ticker');
+            if (ticker) {
+                ticker.addEventListener('mouseenter', () => { ticker.style.animationPlayState = 'paused'; });
+                ticker.addEventListener('mouseleave', () => { ticker.style.animationPlayState = 'running'; });
+            }
+        }
+        
+        function initDashboard() {
+            updateClock();
+            animateOnLoad();
+            
+            const logo = document.querySelector('.fa-newspaper');
+            if (logo) {
+                logo.addEventListener('click', () => {
+                    logo.style.transform = 'scale(1.3) rotate(15deg)';
+                    setTimeout(() => {
+                        logo.style.transition = 'transform 0.4s';
+                        logo.style.transform = 'scale(1) rotate(0)';
+                    }, 200);
+                });
+            }
+            
+            setTimeout(() => {
+                const hint = document.createElement('div');
+                hint.style.cssText = 'position:fixed;bottom:20px;right:20px;background:rgba(15,23,42,0.9);color:#64748b;font-size:10px;padding:6px 12px;border-radius:9999px;border:1px solid #334155;';
+                hint.innerHTML = 'Press <span class="font-mono">/</span> to jump to headlines • <span class="font-mono">⌘R</span> to refresh';
+                document.body.appendChild(hint);
+                
+                setTimeout(() => {
+                    hint.style.transition = 'opacity 0.6s';
+                    hint.style.opacity = '0';
+                    setTimeout(() => hint.remove(), 600);
+                }, 4200);
+            }, 6500);
+            
+            console.log('%c[DailyBrief] Dashboard v12 initialized with 12 sources including JobbersWorld', 'color:#475569');
+        }
+        
+        window.onload = initDashboard;
+        
+        setTimeout(() => {
+            document.querySelectorAll('a[target="_blank"]').forEach(link => {
+                if (!link.getAttribute('rel')) {
+                    link.setAttribute('rel', 'noopener noreferrer');
+                }
+            });
+        }, 500);
+    </script>
+</body>
+</html>
